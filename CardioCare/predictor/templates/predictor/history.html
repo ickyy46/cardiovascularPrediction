@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction History</title>
+</head>
+<body>
+    <h2>Prediction History</h2>
+    <p><a href="{% url 'predict_cardio' %}">Back to Prediction Form</a></p>
+    <hr>
+
+    {% if history %}
+        <table border="1" cellpadding="6" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Age</th>
+                    <th>Sex</th>
+                    <th>BMI</th>
+                    <th>Systolic BP</th>
+                    <th>Diastolic BP</th>
+                    <th>Cholesterol</th>
+                    <th>Glucose</th>
+                    <th>Uric Acid</th>
+                    <th>Category</th>
+                    <th>Risk %</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ item.age }}</td>
+                    <td>{% if item.sex == 1 %}Male{% else %}Female{% endif %}</td>
+                    <td>{{ item.bmi }}</td>
+                    <td>{{ item.systolic_bp }}</td>
+                    <td>{{ item.diastolic_bp }}</td>
+                    <td>{{ item.cholesterol }}</td>
+                    <td>{{ item.glucose }}</td>
+                    <td>{{ item.uric_acid }}</td>
+                    <td>{{ item.prediction_category }}</td>
+                    <td>{{ item.risk_percentage }}%</td>
+                    <td>
+                        <a href="{% url 'delete_cardio_history' item.pk %}" onclick="return confirm('Delete this record?');">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No records found.</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CardioCare Prediction System</title>
+</head>
+<body>
+    <h2>CardioCare Prediction System (Home-Based)</h2>
+    <p><a href="{% url 'prediction_history' %}">View History</a></p>
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <h3>Demographics & Lifestyle</h3>
+        <label>Age (Years):</label>
+        <input type="number" name="age" required><br><br>
+
+        <label>Gender:</label>
+        <select name="gender">
+            <option value="2">Male</option>
+            <option value="1">Female</option>
+        </select><br><br>
+
+        <label>Weight (kg):</label>
+        <input type="number" step="0.1" name="weight" required><br><br>
+
+        <label>Height (cm):</label>
+        <input type="number" step="0.1" name="height" required><br><br>
+
+        <label>Smoking Status:</label>
+        <select name="smoke">
+            <option value="0">Non-Smoker</option>
+            <option value="1">Smoker</option>
+        </select><br><br>
+
+        <label>Alcohol Intake:</label>
+        <select name="alco">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+        </select><br><br>
+
+        <label>Physical Activity:</label>
+        <select name="active">
+            <option value="1">Active</option>
+            <option value="0">Not Active</option>
+        </select><br><br>
+
+        <hr>
+        <h3>Clinical Measurements (Portable Home Kits)</h3>
+        <label>Systolic Blood Pressure (ap_hi):</label>
+        <input type="number" name="ap_hi" placeholder="e.g. 120" required><br><br>
+
+        <label>Diastolic Blood Pressure (ap_lo):</label>
+        <input type="number" name="ap_lo" placeholder="e.g. 80" required><br><br>
+
+        <label>Cholesterol Level:</label>
+        <select name="cholesterol">
+            <option value="1">Normal</option>
+            <option value="2">Above Normal</option>
+            <option value="3">Well Above Normal</option>
+        </select><br><br>
+
+        <label>Glucose Level:</label>
+        <select name="gluc">
+            <option value="1">Normal</option>
+            <option value="2">Above Normal</option>
+            <option value="3">Well Above Normal</option>
+        </select><br><br>
+
+        <button type="submit">Check Cardiovascular Risk</button>
+    </form>
+
+    {% if result %}
+        <hr>
+        <h3>Result: {{ result }}</h3>
+        <p>Estimated Risk Probability: <strong>{{ risk_percentage }}%</strong></p>
+    {% endif %}
+</body>
+</html>
