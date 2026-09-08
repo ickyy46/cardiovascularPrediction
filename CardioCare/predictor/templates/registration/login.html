@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CardioCare</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            width: 100%;
+            max-width: 430px;
+            background: #fff;
+            border-radius: 18px;
+            padding: 34px;
+            box-shadow: 0 12px 35px rgba(0,0,0,.10);
+        }
+        h1 { margin: 0 0 8px; font-size: 30px; }
+        .subtitle { margin: 0 0 26px; color: #6b7280; }
+        label { display: block; margin: 14px 0 7px; font-weight: 600; }
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        input:focus { outline: 2px solid #c7d2fe; border-color: #6366f1; }
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 13px;
+            border: 0;
+            border-radius: 10px;
+            background: #4f46e5;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover { background: #4338ca; }
+        .errorlist {
+            color: #b91c1c;
+            background: #fee2e2;
+            border-radius: 8px;
+            padding: 9px 11px;
+            list-style: none;
+            margin: 7px 0;
+            font-size: 14px;
+        }
+        .footer { text-align: center; margin-top: 22px; color: #6b7280; }
+        a { color: #4f46e5; text-decoration: none; font-weight: 600; }
+        .brand { text-align: center; font-weight: 800; color: #4f46e5; margin-bottom: 18px; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="brand">CardioCare</div>
+        <h1>Welcome back</h1>
+        <p class="subtitle">Login to access your saved prediction history.</p>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+
+            <label for="{{ form.password.id_for_label }}">Password</label>
+            {{ form.password }}
+            {{ form.password.errors }}
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="footer">
+            Don't have an account? <a href="{% url 'register' %}">Register</a><br><br>
+            <a href="{% url 'predict_cardio' %}">Back to CardioCare</a>
+        </div>
+    </div>
+</body>
+</html>

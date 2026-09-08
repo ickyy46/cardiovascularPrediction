@@ -132,3 +132,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
 }
+# Authentication redirects
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "predict_cardio"
+LOGOUT_REDIRECT_URL = "predict_cardio"

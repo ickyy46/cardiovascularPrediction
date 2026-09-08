@@ -71,9 +71,20 @@
 <body>
 
 <header>
-    <a href="{% url 'predict_cardio' %}" class="logo">Cardio<span>Care</span></a>
+    <a href="{% url 'predict_cardio' %}" class="logo">
+        Cardio<span>Care</span>
+    </a>
+
     <nav>
-        <a href="{% url 'prediction_history' %}">Prediction History</a>
+        <a href="{% url 'predict_cardio' %}">Home</a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'prediction_history' %}">History</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="login-btn">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
     </nav>
 </header>
 
