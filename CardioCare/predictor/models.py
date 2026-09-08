@@ -11,7 +11,7 @@ class CardioPrediction(models.Model):
         related_name="cardio_predictions",
     )
     age = models.IntegerField()
-    gender = models.IntegerField(choices=[(2, "Male"), (1, "Female")])
+    gender = models.IntegerField(choices=[(1, "Female"), (2, "Male")])
     weight = models.FloatField()
     height = models.FloatField()
     bmi = models.FloatField()
@@ -26,6 +26,7 @@ class CardioPrediction(models.Model):
     smoke = models.IntegerField(choices=[(0, "No"), (1, "Yes")])
     alco = models.IntegerField(choices=[(0, "No"), (1, "Yes")])
     active = models.IntegerField(choices=[(0, "No"), (1, "Yes")])
+    genetic = models.IntegerField(choices=[(0, "No"), (1, "Yes")], default=0)
     prediction_category = models.CharField(max_length=50)
     risk_percentage = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)

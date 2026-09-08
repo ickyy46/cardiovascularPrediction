@@ -64,6 +64,8 @@
         .recommendation-box { background-color: var(--bg-color); border: 1px solid var(--border); border-radius: calc(var(--radius) - 4px); padding: 1.25rem; text-align: left; margin-bottom: 1.5rem; }
         .recommendation-box h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
         .recommendation-box p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; }
+        .form-message { background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:.8rem 1rem; border-radius:8px; margin-bottom:1rem; font-size:.875rem; }
+        .save-note { margin-top:1.5rem; padding:.85rem 1rem; background:#f8fafc; border:1px solid var(--border); border-radius:8px; color:var(--text-muted); font-size:.85rem; line-height:1.5; }
         footer { padding: 2rem; font-size: 0.8rem; color: var(--text-muted); text-align: center; }
         @media (max-width: 550px) { .form-grid { grid-template-columns: 1fr; } }
     </style>
@@ -79,6 +81,7 @@
         <a href="{% url 'predict_cardio' %}">Home</a>
 
         {% if user.is_authenticated %}
+            <span style="color: var(--text-muted); font-size:.85rem; margin-left:1rem;">{{ user.username }}</span>
             <a href="{% url 'prediction_history' %}">History</a>
             <a href="{% url 'logout' %}">Logout</a>
         {% else %}
@@ -89,6 +92,11 @@
 </header>
 
     <main>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="form-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
         <!-- Include Components -->
         {% include 'predictor/components/welcome.html' %}
         {% include 'predictor/components/form_and_result.html' %}
