@@ -2,281 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CardioCare | Prediction History</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Top Navigation Bar */
-        .navbar {
-            max-width: 1100px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 24px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand-logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #0f172a;
-            text-decoration: none;
-        }
-
-        .brand-logo span {
-            color: #2563eb;
-        }
-
-        .nav-link {
-            color: #64748b;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover {
-            color: #2563eb;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1050px;
-            width: 92%;
-            margin: 10px auto 50px auto;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 36px 40px;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.04);
-            border: 1px solid #e2e8f0;
-            flex: 1;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #64748b;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 20px;
-            transition: color 0.2s;
-        }
-
-        .back-link:hover {
-            color: #2563eb;
-        }
-
-        .page-title {
-            font-size: 26px;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 6px;
-        }
-
-        .page-subtitle {
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 28px;
-        }
-
-        /* Table Design */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 13px;
-        }
-
-        th {
-            background-color: #f8fafc;
-            color: #475569;
-            font-weight: 600;
-            padding: 14px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #334155;
-            vertical-align: middle;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover {
-            background-color: #fbfcfe;
-        }
-
-        /* Status Badges */
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .badge-low {
-            background-color: #dcfce7;
-            color: #15803d;
-        }
-
-        .badge-moderate {
-            background-color: #fef9c3;
-            color: #a16207;
-        }
-
-        .badge-high {
-            background-color: #fee2e2;
-            color: #b91c1c;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-        }
-
-        .empty-state p {
-            color: #64748b;
-            font-size: 15px;
-            margin-bottom: 20px;
-        }
-
-        .btn-primary {
-            display: inline-block;
-            background-color: #2563eb;
-            color: #ffffff;
-            padding: 10px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #1d4ed8;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: #94a3b8;
-        }
-    </style>
+    <title>Prediction History</title>
 </head>
 <body>
+    <h2>Prediction History</h2>
+    <p><a href="{% url 'predict_cardio' %}">Back to Prediction Form</a></p>
+    <hr>
 
-    <!-- Header Navigation -->
-    <header class="navbar">
-        <a href="/" class="brand-logo">Cardio<span>Care</span></a>
-        <a href="/" class="nav-link">Prediction Assessment</a>
-    </header>
-
-    <!-- Content Container -->
-    <main class="container">
-        <a href="/" class="back-link">&larr; Back to Assessment</a>
-        <h1 class="page-title">Prediction History</h1>
-        <p class="page-subtitle">Historical cardiovascular risk records and previous evaluation scores.</p>
-
-        {% if predictions %}
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date & Time</th>
-                        <th>Age</th>
-                        <th>Sex</th>
-                        <th>BP (Sys/Dia)</th>
-                        <th>Cholesterol</th>
-                        <th>Glucose</th>
-                        <th>Risk Score</th>
-                        <th>Result</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in predictions %}
-                    <tr>
-                        <td>{{ item.created_at|date:"M d, Y H:i"|default:"Recently" }}</td>
-                        <td>{{ item.age }} yrs</td>
-                        <td>
-                            {% if item.gender == 2 or item.gender == '2' %}Male{% else %}Female{% endif %}
-                        </td>
-                        <td>{{ item.ap_hi }} / {{ item.ap_lo }} mmHg</td>
-                        <td>
-                            {% if item.cholesterol == 1 or item.cholesterol == '1' %}Normal
-                            {% elif item.cholesterol == 2 or item.cholesterol == '2' %}Above Normal
-                            {% elif item.cholesterol == 3 or item.cholesterol == '3' %}Well Above Normal
-                            {% else %}-{% endif %}
-                        </td>
-                        <td>
-                            {% if item.gluc == 1 or item.gluc == '1' %}Normal
-                            {% elif item.gluc == 2 or item.gluc == '2' %}Above Normal
-                            {% elif item.gluc == 3 or item.gluc == '3' %}Well Above Normal
-                            {% else %}-{% endif %}
-                        </td>
-                        <td><strong>{{ item.risk_percentage|default:"--" }}%</strong></td>
-                        <td>
-                            {% if "Higher" in item.prediction_result %}
-                                <span class="badge badge-high">{{ item.prediction_result }}</span>
-                            {% elif "Moderate" in item.prediction_result %}
-                                <span class="badge badge-moderate">{{ item.prediction_result }}</span>
-                            {% else %}
-                                <span class="badge badge-low">{{ item.prediction_result }}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <div class="empty-state">
-            <p>No screening records found in the database.</p>
-            <a href="/" class="btn-primary">Start New Assessment</a>
-        </div>
-        {% endif %}
-    </main>
-
-    <!-- Footer Note -->
-    <footer>
-        UniKL MIIT &bull; ISB46203 Home-Based Cardiovascular Disease Prediction Application
-    </footer>
-
+    {% if history %}
+        <table border="1" cellpadding="6" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Age</th>
+                    <th>Sex</th>
+                    <th>BMI</th>
+                    <th>Systolic BP</th>
+                    <th>Diastolic BP</th>
+                    <th>Cholesterol</th>
+                    <th>Glucose</th>
+                    <th>Uric Acid</th>
+                    <th>Category</th>
+                    <th>Risk %</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ item.age }}</td>
+                    <td>{% if item.sex == 1 %}Male{% else %}Female{% endif %}</td>
+                    <td>{{ item.bmi }}</td>
+                    <td>{{ item.systolic_bp }}</td>
+                    <td>{{ item.diastolic_bp }}</td>
+                    <td>{{ item.cholesterol }}</td>
+                    <td>{{ item.glucose }}</td>
+                    <td>{{ item.uric_acid }}</td>
+                    <td>{{ item.prediction_category }}</td>
+                    <td>{{ item.risk_percentage }}%</td>
+                    <td>
+                        <a href="{% url 'delete_cardio_history' item.pk %}" onclick="return confirm('Delete this record?');">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No records found.</p>
+    {% endif %}
 </body>
 </html>
