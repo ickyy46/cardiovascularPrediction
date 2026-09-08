@@ -1,0 +1,100 @@
+<div id="inputFormCard" class="card" {% if not prediction %}style="display: none;"{% endif %}>
+    <button type="button" class="btn-back" onclick="showWelcomeScreen()">&larr; Back to Welcome</button>
+    
+    <div class="form-header">
+        <h2>Health Assessment Inputs</h2>
+        <p>Provide your clinical measurement details and personal background indicators below.</p>
+    </div>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+
+        <!-- 1. Clinical Inputs -->
+        <span class="section-label">Clinical Measurement Inputs (Home Monitor)</span>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="systolic">Systolic Blood Pressure <span>(mmHg)</span></label>
+                <input type="number" id="systolic" name="systolic" placeholder="e.g. 120" value="{{ request.POST.systolic }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="diastolic">Diastolic Blood Pressure <span>(mmHg)</span></label>
+                <input type="number" id="diastolic" name="diastolic" placeholder="e.g. 80" value="{{ request.POST.diastolic }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cholesterol">Cholesterol Level</label>
+                <select id="cholesterol" name="cholesterol" required>
+                    <option value="1" {% if request.POST.cholesterol == '1' %}selected{% endif %}>Normal</option>
+                    <option value="2" {% if request.POST.cholesterol == '2' %}selected{% endif %}>Above Normal</option>
+                    <option value="3" {% if request.POST.cholesterol == '3' %}selected{% endif %}>Well Above Normal</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="glucose">Blood Glucose Level</label>
+                <select id="glucose" name="glucose" required>
+                    <option value="1" {% if request.POST.glucose == '1' %}selected{% endif %}>Normal</option>
+                    <option value="2" {% if request.POST.glucose == '2' %}selected{% endif %}>Above Normal</option>
+                    <option value="3" {% if request.POST.glucose == '3' %}selected{% endif %}>Well Above Normal</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 2. Non-Clinical Inputs -->
+        <span class="section-label">Non-Clinical & Lifestyle Indicators</span>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="age">Age <span>(Years)</span></label>
+                <input type="number" id="age" name="age" placeholder="e.g. 45" value="{{ request.POST.age }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sex">Sex</label>
+                <select id="sex" name="sex" required>
+                    <option value="0" {% if request.POST.sex == '0' %}selected{% endif %}>Female</option>
+                    <option value="1" {% if request.POST.sex == '1' %}selected{% endif %}>Male</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="physical_activity">Physical Activity Level</label>
+                <select id="physical_activity" name="physical_activity" required>
+                    <option value="0" {% if request.POST.physical_activity == '0' %}selected{% endif %}>Lower Activity</option>
+                    <option value="1" {% if request.POST.physical_activity == '1' %}selected{% endif %}>Middle Activity</option>
+                    <option value="2" {% if request.POST.physical_activity == '2' %}selected{% endif %}>Higher Activity</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="lifestyle">Lifestyle Category</label>
+                <select id="lifestyle" name="lifestyle" required>
+                    <option value="0" {% if request.POST.lifestyle == '0' %}selected{% endif %}>Lower Risk</option>
+                    <option value="1" {% if request.POST.lifestyle == '1' %}selected{% endif %}>Middle Risk</option>
+                    <option value="2" {% if request.POST.lifestyle == '2' %}selected{% endif %}>Higher Risk</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="smoking">Smoking Category</label>
+                <select id="smoking" name="smoking" required>
+                    <option value="0" {% if request.POST.smoking == '0' %}selected{% endif %}>Lower (Non-Smoker)</option>
+                    <option value="1" {% if request.POST.smoking == '1' %}selected{% endif %}>Middle</option>
+                    <option value="2" {% if request.POST.smoking == '2' %}selected{% endif %}>Higher</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="genetic">Family Genetic History</label>
+                <select id="genetic" name="genetic" required>
+                    <option value="0" {% if request.POST.genetic == '0' %}selected{% endif %}>No</option>
+                    <option value="1" {% if request.POST.genetic == '1' %}selected{% endif %}>Yes</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Generate Cardiovascular Assessment</button>
+
+
+    </form>
+</div>

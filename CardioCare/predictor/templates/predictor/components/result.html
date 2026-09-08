@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioCare - Prediction Result</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased min-h-screen py-10 px-4">
+
+    <div class="max-w-3xl mx-auto space-y-6">
+        
+        <!-- Header Section -->
+        <div class="text-center space-y-2">
+            <h1 class="text-3xl font-bold text-gray-900">Cardiovascular Risk Assessment</h1>
+            <p class="text-sm text-gray-500">Assessment generated on: {{ prediction_date|default:"September 8, 2026" }}</p>
+        </div>
+
+        <!-- Dynamic Prediction Outcome Card -->
+        {% comment %}
+            Expects Django Context:
+            - prediction_category: 'Lower', 'Moderate', or 'Higher'
+            - risk_percentage: Integer/Float (e.g., 18.5)
+        {% endcomment %}
+        <div class="p-6 rounded-2xl border shadow-sm transition-all bg-white 
+            {% if prediction_category == 'Higher' %} border-red-200 bg-red-50/30
+            {% elif prediction_category == 'Moderate' %} border-amber-200 bg-amber-50/30
+            {% else %} border-emerald-200 bg-emerald-50/30 {% endif %}">
+            
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 text-center md:text-left">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Predicted Likelihood</span>
+                    <h2 class="text-2xl font-extrabold 
+                        {% if prediction_category == 'Higher' %} text-red-600
+                        {% elif prediction_category == 'Moderate' %} text-amber-600
+                        {% else %} text-emerald-600 {% endif %}">
+                        {{ prediction_category|default:"Lower" }} Likelihood
+                    </h2>
+                    <p class="text-sm text-gray-600">
+                        Based on your clinical metrics and health habits, your estimated risk factor is 
+                        <strong class="font-semibold">{{ risk_percentage|default:"12" }}%</strong>.
+                    </p>
+                </div>
+
+                <!-- Risk Badge Visual -->
+                <div class="flex-shrink-0">
+                    <div class="w-24 h-24 rounded-full flex items-center justify-center font-bold text-xl border-4 
+                        {% if prediction_category == 'Higher' %} border-red-500 text-red-600 bg-red-100
+                        {% elif prediction_category == 'Moderate' %} border-amber-500 text-amber-600 bg-amber-100
+                        {% else %} border-emerald-500 text-emerald-600 bg-emerald-100 {% endif %}">
+                        {{ risk_percentage|default:"12" }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Summary Section -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
+            <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Submitted Health Parameters</h3>
+            
+            <!-- Clinical Metrics Table -->
+            <div class="space-y-2">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Clinical Data (Home Kit)</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">Blood Pressure</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ systolic|default:"120" }}/{{ diastolic|default:"80" }} mmHg</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">Cholesterol</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ cholesterol|default:"190" }} mg/dL</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">Blood Glucose</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ glucose|default:"95" }} mg/dL</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">Uric Acid</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ uric_acid|default:"5.5" }} mg/dL</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Non-Clinical Metrics Table -->
+            <div class="space-y-2 pt-2">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Demographic & Lifestyle Profile</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">Age & Sex</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ age|default:"45" }} yrs | {% if sex == 1 %}Male{% else %}Female{% endif %}</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">BMI / Obesity</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ bmi|default:"24.2" }}</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">Physical Activity</p>
+                        <p class="text-sm font-semibold text-gray-800">Level {{ physical_activity|default:"2" }}</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">Smoking / Lifestyle</p>
+                        <p class="text-sm font-semibold text-gray-800">Score {{ lifestyle_score|default:"0" }}</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500">Family Genetic History</p>
+                        <p class="text-sm font-semibold text-gray-800">{% if genetic == 1 %}Yes{% else %}No{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Required Disclaimer Box -->
+        <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-3 text-blue-900 text-xs sm:text-sm">
+            <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div>
+                <strong class="font-semibold block mb-0.5">Educational & Screening Purpose Only</strong>
+                This application is designed as a home-based preliminary screening tool and does not constitute or replace a professional medical diagnosis. Please consult a certified healthcare professional for medical evaluations or concerns.
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-10 flex flex-col sm:flex-row gap-4">
+      <a href="{% url 'predict_cardio' %}" class="flex-1 text-center py-4 px-6 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold rounded-2xl shadow-lg transition transform hover:-translate-y-0.5">
+        Perform Another Assessment
+      </a>
+      <a href="{% url 'prediction_history' %}" class="flex-1 text-center py-4 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg transition transform hover:-translate-y-0.5">
+        View Past History
+      </a>
+        </div>
+
+    </div>
+
+</body>
+</html>

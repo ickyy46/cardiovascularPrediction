@@ -2,79 +2,102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CardioCare Prediction System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioCare | Home-Based Cardiovascular Risk Assessment</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border: #e2e8f0;
+            --notice-bg: #eff6ff;
+            --notice-border: #bfdbfe;
+            --notice-text: #1e40af;
+            --radius: 12px;
+            --risk-low: #16a34a;
+            --risk-low-bg: #f0fdf4;
+            --risk-moderate: #d97706;
+            --risk-moderate-bg: #fffbeb;
+            --risk-high: #dc2626;
+            --risk-high-bg: #fef2f2;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; align-items: center; }
+        header { width: 100%; max-width: 800px; padding: 2rem 1.5rem 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--text-main); text-decoration: none; letter-spacing: -0.02em; }
+        .logo span { color: var(--accent); }
+        nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-left: 1.25rem; transition: color 0.2s; }
+        nav a:hover { color: var(--text-main); }
+        main { width: 100%; max-width: 720px; padding: 1.5rem; flex-grow: 1; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.25rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); }
+        .welcome-card { text-align: center; }
+        .welcome-card h1 { font-size: 1.85rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 1rem; color: var(--text-main); }
+        .welcome-card p.subtitle { color: var(--text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem; }
+        .disclaimer-box { background-color: var(--notice-bg); border: 1px solid var(--notice-border); border-radius: 8px; padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.875rem; color: var(--notice-text); line-height: 1.5; text-align: left; }
+        .disclaimer-box strong { display: block; margin-bottom: 0.3rem; font-size: 0.9rem; }
+        .form-header { margin-bottom: 1.75rem; }
+        .form-header h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+        .form-header p { font-size: 0.875rem; color: var(--text-muted); }
+        .section-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 1.5rem 0 1rem 0; display: block; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+        .section-label:first-of-type { margin-top: 0; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-size: 0.825rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.4rem; }
+        label span { font-size: 0.75rem; font-weight: normal; color: var(--text-muted); }
+        input, select { width: 100%; padding: 0.65rem 0.8rem; border: 1px solid var(--border); border-radius: calc(var(--radius) - 6px); font-size: 0.9rem; outline: none; background-color: #fff; transition: border-color 0.2s; }
+        input:focus, select:focus { border-color: var(--accent); }
+        .btn-primary { width: 100%; padding: 0.85rem; background-color: var(--accent); color: #fff; border: none; border-radius: calc(var(--radius) - 6px); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; margin-top: 2rem; text-decoration: none; display: inline-block; text-align: center; }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-back { background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; margin-bottom: 1rem; padding: 0; display: inline-flex; align-items: center; }
+        .btn-back:hover { color: var(--text-main); }
+        .result-wrapper { margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed var(--border); text-align: center; }
+        .result-badge { display: inline-block; padding: 0.5rem 1.25rem; border-radius: 50px; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 1rem; }
+        .result-badge.lower { background-color: var(--risk-low-bg); color: var(--risk-low); border: 1px solid var(--risk-low); }
+        .result-badge.moderate { background-color: var(--risk-moderate-bg); color: var(--risk-moderate); border: 1px solid var(--risk-moderate); }
+        .result-badge.higher { background-color: var(--risk-high-bg); color: var(--risk-high); border: 1px solid var(--risk-high); }
+        .result-title { font-size: 1.65rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .result-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .recommendation-box { background-color: var(--bg-color); border: 1px solid var(--border); border-radius: calc(var(--radius) - 4px); padding: 1.25rem; text-align: left; margin-bottom: 1.5rem; }
+        .recommendation-box h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .recommendation-box p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; }
+        footer { padding: 2rem; font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+        @media (max-width: 550px) { .form-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
-    <h2>CardioCare Prediction System (Home-Based)</h2>
-    <p><a href="{% url 'prediction_history' %}">View History</a></p>
-    <hr>
 
-    <form method="POST">
-        {% csrf_token %}
+<header>
+    <a href="{% url 'predict_cardio' %}" class="logo">Cardio<span>Care</span></a>
+    <nav>
+        <a href="{% url 'prediction_history' %}">Prediction History</a>
+    </nav>
+</header>
 
-        <h3>Demographics & Lifestyle</h3>
-        <label>Age (Years):</label>
-        <input type="number" name="age" required><br><br>
+    <main>
+        <!-- Include Components -->
+        {% include 'predictor/components/welcome.html' %}
+        {% include 'predictor/components/form_and_result.html' %}
+    </main>
 
-        <label>Gender:</label>
-        <select name="gender">
-            <option value="2">Male</option>
-            <option value="1">Female</option>
-        </select><br><br>
+    <footer>
+        UniKL MIIT &bull; ISB46203 Home-Based Cardiovascular Disease Prediction Application
+    </footer>
 
-        <label>Weight (kg):</label>
-        <input type="number" step="0.1" name="weight" required><br><br>
+    <script>
+        function showInputForm() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('inputFormCard').style.display = 'block';
+        }
 
-        <label>Height (cm):</label>
-        <input type="number" step="0.1" name="height" required><br><br>
+        function showWelcomeScreen() {
+            document.getElementById('inputFormCard').style.display = 'none';
+            document.getElementById('welcomeScreen').style.display = 'block';
+        }
+    </script>
 
-        <label>Smoking Status:</label>
-        <select name="smoke">
-            <option value="0">Non-Smoker</option>
-            <option value="1">Smoker</option>
-        </select><br><br>
-
-        <label>Alcohol Intake:</label>
-        <select name="alco">
-            <option value="0">No</option>
-            <option value="1">Yes</option>
-        </select><br><br>
-
-        <label>Physical Activity:</label>
-        <select name="active">
-            <option value="1">Active</option>
-            <option value="0">Not Active</option>
-        </select><br><br>
-
-        <hr>
-        <h3>Clinical Measurements (Portable Home Kits)</h3>
-        <label>Systolic Blood Pressure (ap_hi):</label>
-        <input type="number" name="ap_hi" placeholder="e.g. 120" required><br><br>
-
-        <label>Diastolic Blood Pressure (ap_lo):</label>
-        <input type="number" name="ap_lo" placeholder="e.g. 80" required><br><br>
-
-        <label>Cholesterol Level:</label>
-        <select name="cholesterol">
-            <option value="1">Normal</option>
-            <option value="2">Above Normal</option>
-            <option value="3">Well Above Normal</option>
-        </select><br><br>
-
-        <label>Glucose Level:</label>
-        <select name="gluc">
-            <option value="1">Normal</option>
-            <option value="2">Above Normal</option>
-            <option value="3">Well Above Normal</option>
-        </select><br><br>
-
-        <button type="submit">Check Cardiovascular Risk</button>
-    </form>
-
-    {% if result %}
-        <hr>
-        <h3>Result: {{ result }}</h3>
-        <p>Estimated Risk Probability: <strong>{{ risk_percentage }}%</strong></p>
-    {% endif %}
 </body>
 </html>

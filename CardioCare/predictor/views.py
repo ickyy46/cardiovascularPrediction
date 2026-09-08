@@ -63,10 +63,6 @@ def calculate_cardio_risk(age, gender, weight, height, ap_hi, ap_lo, cholesterol
 # WEB VIEWS (HTML Templates)
 # ==========================================
 def predict_cardio(request):
-    result = None
-    result_class = None
-    risk_percentage = None
-
     if request.method == 'POST':
         age = int(request.POST.get('age', 0))
         gender = int(request.POST.get('gender', 1))
@@ -84,7 +80,7 @@ def predict_cardio(request):
             age, gender, weight, height, ap_hi, ap_lo, cholesterol, gluc, smoke, alco, active
         )
 
-        CardioPrediction.objects.create(
+        record = CardioPrediction.objects.create(
             age=age,
             gender=gender,
             weight=weight,
@@ -101,16 +97,36 @@ def predict_cardio(request):
             risk_percentage=risk_percentage,
         )
 
-    return render(
-        request,
-        'predictor/index.html',
-        {
-            'result': result,
-            'result_class': result_class,
-            'risk_percentage': risk_percentage,
-        },
-    )
+        # Redirect to the new dedicated result page
+        return redirect('result_detail', pk=record.pk)
 
+    return render(request, 'predictor/index.html')
+
+
+def result_detail(request, pk):
+    """Renders the result page component for a specific prediction record."""
+    prediction = get_object_or_404(CardioPrediction, pk=pk)
+    
+    context = {
+        'prediction': prediction,
+        'prediction_date': prediction.created_at.strftime("%B %d, %Y") if hasattr(prediction, 'created_at') else None,
+        'prediction_category': prediction.prediction_category.replace(' Predicted Likelihood', ''),
+        'result': prediction.prediction_category,
+        'risk_percentage': prediction.risk_percentage,
+        'systolic': int(prediction.ap_hi),
+        'diastolic': int(prediction.ap_lo),
+        'cholesterol': prediction.cholesterol,
+        'glucose': prediction.gluc,
+        'age': prediction.age,
+        'bmi': prediction.bmi,
+        'physical_activity': prediction.active,
+        'result_class': (
+            'success' if 'Lower' in prediction.prediction_category
+            else 'warning' if 'Moderate' in prediction.prediction_category
+            else 'danger'
+        ),
+    }
+    return render(request, 'predictor/components/result.html', context)
 
 def prediction_history(request):
     history = CardioPrediction.objects.all().order_by('-created_at')
@@ -127,12 +143,9 @@ def delete_history(request, pk):
 # REST API ENDPOINTS (Protected with JWT Auth)
 # ==========================================
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])  # Enforces JWT Authentication
+@permission_classes([IsAuthenticated])
 def api_predict_cardio(request):
-    """
-    API Endpoint to predict cardiovascular risk via JSON POST payload.
-    Exposes prediction capability to authenticated Mobile Applications.
-    """
+    """API Endpoint to predict cardiovascular risk via JSON POST payload."""
     serializer = CardioPredictionSerializer(data=request.data)
     if serializer.is_valid():
         data = serializer.validated_data
@@ -151,10 +164,8 @@ def api_predict_cardio(request):
             active=data['active']
         )
 
-        # Attach authenticated user if available
         user = request.user if request.user.is_authenticated else None
 
-        # Save prediction record to database
         record = serializer.save(
             bmi=bmi,
             prediction_category=result_category,
@@ -174,7 +185,7 @@ def api_predict_cardio(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])  # Enforces JWT Authentication
+@permission_classes([IsAuthenticated])
 def api_prediction_history(request):
     """API Endpoint to fetch prediction history for authenticated mobile applications."""
     records = CardioPrediction.objects.all().order_by('-created_at')
