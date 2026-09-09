@@ -24,7 +24,8 @@
             <div class="form-group">
                 <label for="cholesterol">Cholesterol Level</label>
                 <select id="cholesterol" name="cholesterol" required>
-                    <option value="1" {% if request.POST.cholesterol == '1' or not request.POST.cholesterol %}selected{% endif %}>Normal</option>
+                    <option value="" disabled selected></option>
+                    <option value="1" {% if request.POST.cholesterol == '1' or not request.POST.cholesterol %}{% endif %}>Normal</option>
                     <option value="2" {% if request.POST.cholesterol == '2' %}selected{% endif %}>Above Normal</option>
                     <option value="3" {% if request.POST.cholesterol == '3' %}selected{% endif %}>Well Above Normal</option>
                 </select>
@@ -33,7 +34,8 @@
             <div class="form-group">
                 <label for="gluc">Blood Glucose Level</label>
                 <select id="gluc" name="gluc" required>
-                    <option value="1" {% if request.POST.gluc == '1' or not request.POST.gluc %}selected{% endif %}>Normal</option>
+                    <option value="" disabled selected></option>
+                    <option value="1" {% if request.POST.gluc == '1' or not request.POST.gluc %}{% endif %}>Normal</option>
                     <option value="2" {% if request.POST.gluc == '2' %}selected{% endif %}>Above Normal</option>
                     <option value="3" {% if request.POST.gluc == '3' %}selected{% endif %}>Well Above Normal</option>
                 </select>
@@ -50,8 +52,9 @@
             <div class="form-group">
                 <label for="gender">Sex</label>
                 <select id="gender" name="gender" required>
-                    <option value="1" {% if request.POST.gender == '1' %}selected{% endif %}>Female</option>
-                    <option value="2" {% if request.POST.gender == '2' %}selected{% endif %}>Male</option>
+                    <option value="" disabled selected></option>
+                    <option value="1" {% if request.POST.gender == '1' %}{% endif %}>Female</option>
+                    <option value="2" {% if request.POST.gender == '2' %}{% endif %}>Male</option>
                 </select>
             </div>
 
@@ -68,32 +71,36 @@
             <div class="form-group">
                 <label for="smoke">Do you smoke?</label>
                 <select id="smoke" name="smoke" required>
-                    <option value="0" {% if request.POST.smoke != '1' %}selected{% endif %}>No</option>
-                    <option value="1" {% if request.POST.smoke == '1' %}selected{% endif %}>Yes</option>
+                    <option value="" disabled selected></option>
+                    <option value="0" {% if request.POST.smoke != '1' %}{% endif %}>No</option>
+                    <option value="1" {% if request.POST.smoke == '1' %}{% endif %}>Yes</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="alco">Do you consume alcohol?</label>
                 <select id="alco" name="alco" required>
-                    <option value="0" {% if request.POST.alco != '1' %}selected{% endif %}>No</option>
-                    <option value="1" {% if request.POST.alco == '1' %}selected{% endif %}>Yes</option>
+                    <option value="" disabled selected></option>
+                    <option value="0" {% if request.POST.alco != '1' %}{% endif %}>No</option>
+                    <option value="1" {% if request.POST.alco == '1' %}{% endif %}>Yes</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="active">Physically active?</label>
                 <select id="active" name="active" required>
-                    <option value="1" {% if request.POST.active != '0' %}selected{% endif %}>Yes</option>
-                    <option value="0" {% if request.POST.active == '0' %}selected{% endif %}>No</option>
+                    <option value="" disabled selected></option>
+                    <option value="1" {% if request.POST.active != '0' %}{% endif %}>Yes</option>
+                    <option value="0" {% if request.POST.active == '0' %}{% endif %}>No</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="genetic">Family History of Cardiovascular Disease</label>
                 <select id="genetic" name="genetic" required>
-                    <option value="0" {% if request.POST.genetic != '1' %}selected{% endif %}>No</option>
-                    <option value="1" {% if request.POST.genetic == '1' %}selected{% endif %}>Yes</option>
+                    <option value="" disabled selected></option>
+                    <option value="0" {% if request.POST.genetic != '1' %}{% endif %}>No</option>
+                    <option value="1" {% if request.POST.genetic == '1' %}{% endif %}>Yes</option>
                 </select>
             </div>
         </div>
