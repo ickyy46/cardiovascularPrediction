@@ -36,6 +36,16 @@
             font-size: 15px;
         }
         input:focus { outline: 2px solid #c7d2fe; border-color: #6366f1; }
+        
+        .forgot-password-wrapper {
+            text-align: right;
+            margin-top: 8px;
+        }
+        .forgot-password-wrapper a {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         button {
             width: 100%;
             margin-top: 22px;
@@ -80,6 +90,10 @@
             <label for="{{ form.password.id_for_label }}">Password</label>
             {{ form.password }}
             {{ form.password.errors }}
+
+            <div class="forgot-password-wrapper">
+                <a href="{% url 'password_reset' %}">Forgot password?</a>
+            </div>
 
             <button type="submit">Login</button>
         </form>

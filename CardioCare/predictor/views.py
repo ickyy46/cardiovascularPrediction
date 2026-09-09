@@ -7,12 +7,17 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from sklearn.exceptions import InconsistentVersionWarning
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .forms import RegisterForm
@@ -135,8 +140,6 @@ def predict_cardio(request):
                 request.session.pop("anonymous_result", None)
                 return redirect("result_detail", pk=record.pk)
 
-            # Anonymous flow: keep only one temporary result in the session.
-            # No CardioPrediction database row is created.
             data["prediction_date"] = timezone.localtime().strftime("%B %d, %Y %I:%M %p")
             request.session["anonymous_result"] = data
             request.session.modified = True
@@ -233,6 +236,52 @@ def logout_view(request):
         logout(request)
         messages.success(request, "You have been logged out.")
     return redirect("predict_cardio")
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def api_register(request):
+    username = request.data.get("username")
+    email = request.data.get("email")
+    password = request.data.get("password")
+
+    if not username or not email or not password:
+        return Response({"error": "Username, email, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "A user with that username already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(email=email).exists():
+        return Response({"error": "A user with that email address already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+    User.objects.create_user(username=username, email=email, password=password)
+    return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def api_password_reset(request):
+    email = request.data.get("email")
+    if not email:
+        return Response({"error": "Email address is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    users = User.objects.filter(email=email)
+    if users.exists():
+        for user in users:
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            
+            reset_url = f"http://127.0.0.1:8000/password-reset-confirm/{uid}/{token}/"
+            
+            send_mail(
+                subject="CardioCare - Password Reset Requested",
+                message=f"Hello {user.username},\n\nClick the link below to reset your password:\n{reset_url}\n\nIf you did not request this, ignore this email.",
+                from_email=None,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+
+    return Response({"message": "If the email exists, password reset instructions have been sent."}, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])

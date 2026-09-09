@@ -136,3 +136,13 @@ REST_FRAMEWORK = {
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "predict_cardio"
 LOGOUT_REDIRECT_URL = "predict_cardio"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# Real Email Delivery via Gmail SMTP
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "farahwaheeda04@gmail.com"  # Your sending Gmail
+EMAIL_HOST_PASSWORD = "your_16_digit_app_password"  # Your Google App Password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
