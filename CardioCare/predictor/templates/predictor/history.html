@@ -2,54 +2,120 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Prediction History</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioCare | Prediction History</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border: #e2e8f0;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --radius: 12px;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); color: var(--text-main); }
+        header { width: 100%; max-width: 1180px; margin: 0 auto; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--text-main); text-decoration: none; }
+        .logo span { color: var(--accent); }
+        nav a { color: var(--text-muted); text-decoration: none; font-size: .9rem; margin-left: 1.25rem; }
+        nav a:hover { color: var(--text-main); }
+        main { max-width: 1180px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 4px 10px rgba(15,23,42,.04); }
+        h1 { margin: 0 0 .4rem; font-size: 1.6rem; }
+        .subtitle { color: var(--text-muted); margin: 0 0 1.5rem; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1050px; }
+        th, td { padding: .8rem .75rem; border-bottom: 1px solid var(--border); text-align: left; font-size: .875rem; white-space: nowrap; }
+        th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); background: #f8fafc; }
+        .actions { display: flex; gap: .5rem; align-items: center; }
+        .btn { display: inline-block; border: 0; border-radius: 7px; padding: .45rem .7rem; font-size: .8rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-view { background: #eff6ff; color: var(--accent); }
+        .btn-delete { background: var(--danger-bg); color: var(--danger); }
+        .empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+        .message { margin-bottom: 1rem; padding: .75rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+    </style>
 </head>
 <body>
-    <h2>Prediction History</h2>
-    <p><a href="{% url 'predict_cardio' %}">Back to Prediction Form</a></p>
-    <hr>
+<header>
+    <a href="{% url 'predict_cardio' %}" class="logo">Cardio<span>Care</span></a>
+    <nav>
+        <a href="{% url 'predict_cardio' %}">Home</a>
+        <a href="{% url 'prediction_history' %}">History</a>
+        {% if user.is_superuser %}<a href="{% url 'system_admin_dashboard' %}">Admin</a>{% endif %}
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+</header>
 
-    {% if history %}
-        <table border="1" cellpadding="6" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Age</th>
-                    <th>Sex</th>
-                    <th>BMI</th>
-                    <th>Systolic BP</th>
-                    <th>Diastolic BP</th>
-                    <th>Cholesterol</th>
-                    <th>Glucose</th>
-                    <th>Uric Acid</th>
-                    <th>Category</th>
-                    <th>Risk %</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in history %}
-                <tr>
-                    <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
-                    <td>{{ item.age }}</td>
-                    <td>{% if item.sex == 1 %}Male{% else %}Female{% endif %}</td>
-                    <td>{{ item.bmi }}</td>
-                    <td>{{ item.systolic_bp }}</td>
-                    <td>{{ item.diastolic_bp }}</td>
-                    <td>{{ item.cholesterol }}</td>
-                    <td>{{ item.glucose }}</td>
-                    <td>{{ item.uric_acid }}</td>
-                    <td>{{ item.prediction_category }}</td>
-                    <td>{{ item.risk_percentage }}%</td>
-                    <td>
-                        <a href="{% url 'delete_cardio_history' item.pk %}" onclick="return confirm('Delete this record?');">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No records found.</p>
+<main>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
     {% endif %}
+
+    <section class="card">
+        <h1>Prediction History</h1>
+        <p class="subtitle">Saved cardiovascular assessments for {{ user.username }}.</p>
+
+        {% if history %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>BMI</th>
+                        <th>Systolic BP</th>
+                        <th>Diastolic BP</th>
+                        <th>Cholesterol</th>
+                        <th>Glucose</th>
+                        <th>Family History</th>
+                        <th>Category</th>
+                        <th>Risk</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history %}
+                    <tr>
+                        <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{ item.age }}</td>
+                        <td>{{ item.get_gender_display }}</td>
+                        <td>{{ item.bmi|floatformat:2 }}</td>
+                        <td>{{ item.ap_hi|floatformat:0 }}</td>
+                        <td>{{ item.ap_lo|floatformat:0 }}</td>
+                        <td>{{ item.get_cholesterol_display }}</td>
+                        <td>{{ item.get_gluc_display }}</td>
+                        <td>{{ item.get_genetic_display }}</td>
+                        <td>{{ item.prediction_category }}</td>
+                        <td>{{ item.risk_percentage|floatformat:1 }}%</td>
+                        <td>
+                            <div class="actions">
+                                <a class="btn btn-view" href="{% url 'result_detail' item.pk %}">View</a>
+                                <form method="post" action="{% url 'delete_history' item.pk %}" onsubmit="return confirm('Delete this record?');" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button class="btn btn-delete" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="empty">
+                <p>No saved assessment records yet.</p>
+                <a class="btn btn-view" href="{% url 'predict_cardio' %}">Start an Assessment</a>
+            </div>
+        {% endif %}
+    </section>
+</main>
 </body>
 </html>
