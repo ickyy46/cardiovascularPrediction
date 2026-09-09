@@ -83,6 +83,7 @@
         {% if user.is_authenticated %}
             <span style="color: var(--text-muted); font-size:.85rem; margin-left:1rem;">{{ user.username }}</span>
             <a href="{% url 'prediction_history' %}">History</a>
+            {% if user.is_superuser %}<a href="{% url 'system_admin_dashboard' %}">Admin</a>{% endif %}
             <a href="{% url 'logout' %}">Logout</a>
         {% else %}
             <a href="{% url 'login' %}" class="login-btn">Login</a>
