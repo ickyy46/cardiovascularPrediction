@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioCare | Prediction Result</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased min-h-screen py-10 px-4">
+    <div class="max-w-3xl mx-auto space-y-6">
+        <div class="flex items-center justify-between gap-4">
+            <a href="{% url 'predict_cardio' %}" class="text-xl font-bold text-gray-900">Cardio<span class="text-blue-600">Care</span></a>
+            <div class="text-sm">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'prediction_history' %}" class="text-blue-600 font-semibold mr-4">History</a>
+                    <a href="{% url 'logout' %}" class="text-gray-600 font-semibold">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-blue-600 font-semibold mr-4">Login</a>
+                    <a href="{% url 'register' %}" class="text-blue-600 font-semibold">Register</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="text-center space-y-2">
+            <h1 class="text-3xl font-bold text-gray-900">Cardiovascular Risk Assessment</h1>
+            <p class="text-sm text-gray-500">Assessment generated on: {{ prediction_date }}</p>
+            {% if user.is_authenticated %}
+                <p class="text-sm text-emerald-700 font-medium">Saved to {{ user.username }}'s prediction history.</p>
+            {% else %}
+                <p class="text-sm text-amber-700 font-medium">Anonymous assessment — this result has not been saved to prediction history.</p>
+            {% endif %}
+        </div>
+
+        <div class="p-6 rounded-2xl border shadow-sm bg-white
+            {% if prediction_category == 'Higher' %} border-red-200
+            {% elif prediction_category == 'Moderate' %} border-amber-200
+            {% else %} border-emerald-200 {% endif %}">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 text-center md:text-left">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Predicted Likelihood</span>
+                    <h2 class="text-2xl font-extrabold
+                        {% if prediction_category == 'Higher' %} text-red-600
+                        {% elif prediction_category == 'Moderate' %} text-amber-600
+                        {% else %} text-emerald-600 {% endif %}">
+                        {{ prediction_category }} Likelihood
+                    </h2>
+                    <p class="text-sm text-gray-600">The model estimated a <strong>{{ risk_percentage }}%</strong> cardiovascular disease likelihood based on the submitted inputs.</p>
+                </div>
+                <div class="w-24 h-24 rounded-full flex items-center justify-center font-bold text-xl border-4
+                    {% if prediction_category == 'Higher' %} border-red-500 text-red-600 bg-red-100
+                    {% elif prediction_category == 'Moderate' %} border-amber-500 text-amber-600 bg-amber-100
+                    {% else %} border-emerald-500 text-emerald-600 bg-emerald-100 {% endif %}">
+                    {{ risk_percentage }}%
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-5">
+            <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Submitted Health Parameters</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Blood Pressure</p><p class="text-sm font-semibold">{{ systolic }}/{{ diastolic }} mmHg</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Cholesterol</p><p class="text-sm font-semibold">{{ cholesterol }}</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Blood Glucose</p><p class="text-sm font-semibold">{{ glucose }}</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Age & Sex</p><p class="text-sm font-semibold">{{ age }} years | {% if gender == 2 %}Male{% else %}Female{% endif %}</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Height / Weight</p><p class="text-sm font-semibold">{{ height }} cm / {{ weight }} kg</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">BMI</p><p class="text-sm font-semibold">{{ bmi }}</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Smoking</p><p class="text-sm font-semibold">{{ smoking }}</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Alcohol</p><p class="text-sm font-semibold">{{ alcohol }}</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Physically Active</p><p class="text-sm font-semibold">{{ physical_activity }}</p></div>
+                <div class="p-3 bg-gray-50 rounded-lg"><p class="text-xs text-gray-500">Family History</p><p class="text-sm font-semibold">{% if genetic == 1 %}Yes{% else %}No{% endif %}</p></div>
+            </div>
+        </div>
+
+        <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 text-xs sm:text-sm">
+            <strong class="font-semibold block mb-1">Educational & Screening Purpose Only</strong>
+            This application is a preliminary home screening tool and does not constitute a medical diagnosis. Consult a qualified healthcare professional for medical evaluation or concerns.
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="{% url 'predict_cardio' %}" class="flex-1 text-center py-3 px-5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl">Perform Another Assessment</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'prediction_history' %}" class="flex-1 text-center py-3 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl">View My History</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="flex-1 text-center py-3 px-5 bg-white border border-blue-600 text-blue-600 font-bold rounded-xl">Login to Save Future Results</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

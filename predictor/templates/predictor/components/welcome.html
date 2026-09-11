@@ -1,0 +1,13 @@
+<div id="welcomeScreen" class="card welcome-card" {% if prediction %}style="display: none;"{% endif %}>
+    <h1>WELCOME TO CARDIOVASCULAR DISEASE PREDICTION TOOL</h1>
+    <p class="subtitle">
+        An accessible home-based tool designed to estimate your cardiovascular disease risk using your clinical measurements and daily lifestyle factors.
+    </p>
+
+    <div class="disclaimer-box">
+        <strong>Important Notice:</strong>
+        This application serves as a preliminary home screening and educational prototype. The generated assessments do not constitute a formal medical diagnosis or replace professional clinical evaluation.
+    </div>
+
+    <button type="button" onclick="showInputForm()" class="btn-primary" style="max-width: 320px; margin-top: 0;">Start Risk Assessment</button>
+</div>

@@ -32,7 +32,13 @@ warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "ml" / "cardio_model.pkl"
-model = joblib.load(MODEL_PATH)
+# model = joblib.load(MODEL_PATH)
+
+def get_model():
+  global _model
+  if _model is None:
+    _model = joblib.load(MODEL_PATH)
+  return _model
 
 
 # =========================================================
@@ -71,7 +77,8 @@ def calculate_cardio_risk(
         dtype=float,
     )
 
-    probabilities = model.predict_proba(features)[0]
+    loaded_model = get_model()
+    probabilities = loaded_model.predict_proba(features)[0]
     risk_percentage = round(float(probabilities[1]) * 100, 1)
 
     if risk_percentage < 35.0:
@@ -82,6 +89,22 @@ def calculate_cardio_risk(
         result = "Higher Predicted Likelihood"
 
     return bmi, risk_percentage, result
+
+def get_risk_factors(data):
+    factors = []
+    if float(data['ap_hi']) >= 130 or float(data['ap_lo']) >= 80:
+        factors.append("Elevated blood pressure reading (Hypertension risk)")
+    if float(data['bmi']) >= 25.0:
+        factors.append(f"BMI elevated at {data['bmi']} (Overweight range)")
+    if int(data['cholesterol']) > 1:
+        factors.append("Above normal serum cholesterol levels")
+    if int(data['gluc']) > 1:
+        factors.append("Above normal glucose levels")
+    if int(data['smoke']) == 1:
+        factors.append("Active tobacco smoking habit")
+    if int(data['active']) == 0:
+        factors.append("Lack of regular physical activity")
+    return factors
 
 
 # =========================================================
@@ -95,15 +118,53 @@ def _choice_label(value, choices):
 def _result_context(data, request=None):
     category = data["prediction_category"]
 
+    # --- EXPLAINABLE AI: Contributing Factor Analysis ---
+    reasons = []
+    ap_hi = float(data.get("ap_hi", 0))
+    ap_lo = float(data.get("ap_lo", 0))
+    bmi = float(data.get("bmi", 0))
+    chol = int(data.get("cholesterol", 1))
+    gluc = int(data.get("gluc", 1))
+    smoke = int(data.get("smoke", 0))
+    active = int(data.get("active", 1))
+
+    if ap_hi >= 130 or ap_lo >= 80:
+        reasons.append(
+            f"Elevated blood pressure ({int(ap_hi)}/{int(ap_lo)} mmHg) suggests"
+            " stage hypertension risk."
+        )
+    if bmi >= 25.0:
+        reasons.append(
+            f"BMI of {bmi} falls into the overweight or higher range, increasing"
+            " cardiac strain."
+        )
+    if chol > 1:
+        reasons.append(
+            "Serum cholesterol is above normal limits, which can contribute to"
+            " arterial plaque."
+        )
+    if gluc > 1:
+        reasons.append(
+            "Blood glucose reading is above optimal reference thresholds."
+        )
+    if smoke == 1:
+        reasons.append(
+            "Active tobacco use constricts vessels and accelerates cardiovascular"
+            " risk."
+        )
+    if active == 0:
+        reasons.append(
+            "Sedentary lifestyle flagged; regular physical activity lowers"
+            " baseline risk."
+        )
+
     return {
         "prediction": data.get("prediction"),
         "prediction_date": data.get("prediction_date"),
-        "prediction_category": category.replace(
-            " Predicted Likelihood",
-            "",
-        ),
+        "prediction_category": category.replace(" Predicted Likelihood", ""),
         "result": category,
         "risk_percentage": data["risk_percentage"],
+        "risk_reasons": reasons,  # <-- Added for Explainable AI
         "systolic": int(float(data["ap_hi"])),
         "diastolic": int(float(data["ap_lo"])),
         "cholesterol": _choice_label(
@@ -111,8 +172,7 @@ def _result_context(data, request=None):
             CardioPrediction._meta.get_field("cholesterol").choices,
         ),
         "glucose": _choice_label(
-            data["gluc"],
-            CardioPrediction._meta.get_field("gluc").choices,
+            data["gluc"], CardioPrediction._meta.get_field("gluc").choices
         ),
         "age": data["age"],
         "gender": int(data["gender"]),
@@ -123,9 +183,7 @@ def _result_context(data, request=None):
         "smoking": "Yes" if int(data["smoke"]) else "No",
         "alcohol": "Yes" if int(data["alco"]) else "No",
         "genetic": int(data.get("genetic", 0)),
-        "is_authenticated": bool(
-            request and request.user.is_authenticated
-        ),
+        "is_authenticated": bool(request and request.user.is_authenticated),
     }
 
 

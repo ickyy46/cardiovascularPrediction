@@ -60,10 +60,11 @@ ROOT_URLCONF = 'CardioCare.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -132,17 +133,17 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
 }
-# Authentication redirects
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "predict_cardio"
 LOGOUT_REDIRECT_URL = "predict_cardio"
 
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-# Real Email Delivery via Gmail SMTP
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "farahwaheeda04@gmail.com"  # Your sending Gmail
-EMAIL_HOST_PASSWORD = "your_16_digit_app_password"  # Your Google App Password
+EMAIL_HOST_USER = "your_sending_email@gmail.com"
+EMAIL_HOST_PASSWORD = "your_16_digit_app_password"  # Generate via Google Account > Security > App Passwords
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+

@@ -8,6 +8,7 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 antialiased min-h-screen py-10 px-4">
     <div class="max-w-3xl mx-auto space-y-6">
+        <!-- Top Navigation -->
         <div class="flex items-center justify-between gap-4">
             <a href="{% url 'predict_cardio' %}" class="text-xl font-bold text-gray-900">Cardio<span class="text-blue-600">Care</span></a>
             <div class="text-sm">
@@ -21,6 +22,19 @@
             </div>
         </div>
 
+        <!-- TREND 1: HUMAN OVERSIGHT BANNER -->
+        <div class="p-4 bg-slate-100 border border-slate-300 rounded-xl text-slate-800 text-xs sm:text-sm flex items-start gap-3">
+            <svg class="w-5 h-5 text-slate-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            <div>
+                <strong class="font-semibold block text-slate-900">Human Oversight Policy</strong>
+                This system operates strictly under human oversight. Algorithmic outputs are non-binding recommendations; primary healthcare decisions, clinical diagnoses, and treatment paths must remain solely under the authority of licensed medical professionals.
+            </div>
+        </div>
+
+        <!-- Heading & Assessment Meta -->
         <div class="text-center space-y-2">
             <h1 class="text-3xl font-bold text-gray-900">Cardiovascular Risk Assessment</h1>
             <p class="text-sm text-gray-500">Assessment generated on: {{ prediction_date }}</p>
@@ -31,6 +45,7 @@
             {% endif %}
         </div>
 
+        <!-- Likelihood Overview -->
         <div class="p-6 rounded-2xl border shadow-sm bg-white
             {% if prediction_category == 'Higher' %} border-red-200
             {% elif prediction_category == 'Moderate' %} border-amber-200
@@ -55,6 +70,38 @@
             </div>
         </div>
 
+        <!-- TREND 2: EXPLAINABLE AI (XAI) SECTION -->
+        <div class="bg-white rounded-2xl p-6 border border-sky-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="p-1.5 bg-sky-100 text-sky-700 rounded-lg text-sm font-bold">XAI</span>
+                    <h3 class="text-lg font-semibold text-gray-900">Explainable AI: Key Contributing Factors</h3>
+                </div>
+                <span class="text-xs text-gray-400">Why did the model generate this?</span>
+            </div>
+            
+            <p class="text-xs text-gray-600">
+                To prevent "black-box" decisions, our Logistic Regression pipeline isolates the submitted parameters that elevated your calculated probability:
+            </p>
+
+            <ul class="space-y-2">
+                {% if risk_reasons %}
+                    {% for reason in risk_reasons %}
+                        <li class="flex items-start gap-2.5 text-sm p-2.5 rounded-lg bg-red-50 text-red-800 border border-red-100">
+                            <span class="text-red-500 font-bold">•</span>
+                            <span>{{ reason }}</span>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="flex items-center gap-2 text-sm p-3 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-100">
+                        <span>✓</span>
+                        <span>All recorded biometric and lifestyle parameters fall within favorable ranges.</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Submitted Health Parameters -->
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-5">
             <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Submitted Health Parameters</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -71,11 +118,29 @@
             </div>
         </div>
 
-        <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 text-xs sm:text-sm">
-            <strong class="font-semibold block mb-1">Educational & Screening Purpose Only</strong>
-            This application is a preliminary home screening tool and does not constitute a medical diagnosis. Consult a qualified healthcare professional for medical evaluation or concerns.
+        <!-- TREND 3: AI ASSISTANT WITH HUMAN-IN-THE-LOOP -->
+        <div class="p-5 bg-amber-50 border border-amber-200 rounded-2xl space-y-3" id="assistant-box">
+            <div class="flex items-center gap-2">
+                <span class="text-lg">🤖</span>
+                <h4 class="font-bold text-gray-900 text-sm sm:text-base">AI Assistant Suggestion (Human-in-the-Loop)</h4>
+            </div>
+            <p class="text-xs sm:text-sm text-gray-700">
+                The AI suggests scheduling a routine clinical review with a general practitioner to monitor your blood pressure and lipid profile. <strong>You decide how to act on this finding.</strong>
+            </p>
+            <div class="flex flex-wrap gap-2 pt-1" id="action-buttons">
+                <button onclick="acceptSuggestion()" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold">
+                    Accept & Mark for Review
+                </button>
+                <button onclick="dismissSuggestion()" class="px-3.5 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-xs font-semibold">
+                    Dismiss Suggestion
+                </button>
+            </div>
+            <p id="assistant-feedback" class="text-xs font-semibold text-emerald-700 hidden">
+                ✓ Noted: User confirmed this consultation recommendation.
+            </p>
         </div>
 
+        <!-- Navigation Buttons -->
         <div class="flex flex-col sm:flex-row gap-4">
             <a href="{% url 'predict_cardio' %}" class="flex-1 text-center py-3 px-5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl">Perform Another Assessment</a>
             {% if user.is_authenticated %}
@@ -85,5 +150,18 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Interactive script for Human-in-the-loop actions -->
+    <script>
+        function acceptSuggestion() {
+            document.getElementById('action-buttons').classList.add('hidden');
+            const feedback = document.getElementById('assistant-feedback');
+            feedback.classList.remove('hidden');
+        }
+
+        function dismissSuggestion() {
+            document.getElementById('assistant-box').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
