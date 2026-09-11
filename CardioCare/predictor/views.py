@@ -34,6 +34,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "ml" / "cardio_model.pkl"
 # model = joblib.load(MODEL_PATH)
 
+_model = None
+
 def get_model():
   global _model
   if _model is None:
@@ -313,15 +315,17 @@ def predict_cardio(request):
         except (TypeError, ValueError) as exc:
             messages.error(
                 request,
-                str(exc)
-                or "Please enter valid values for all assessment fields.",
+                str(exc) or "Please enter valid values for all assessment fields.",
             )
 
-        except Exception:
+        except Exception as e:
+            # Tambah baris ini untuk tengok ralat sebenar di PowerShell:
+            import traceback
+            traceback.print_exc()
+            
             messages.error(
                 request,
-                "The assessment could not be generated. "
-                "Please check your inputs and try again.",
+                f"Debug Error: {str(e)}"  # Paparkan ralat terus pada skrin
             )
 
     return render(
